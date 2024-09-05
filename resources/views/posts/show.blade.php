@@ -149,6 +149,29 @@
     .actions-button button i:hover {
         color: #0056b3;
     }
+
+    .comment {
+        width: 90%;
+        padding: 20px;
+        background-color: #f4f4f4;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        margin: 20px;
+    }
+
+    .comment img {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        margin-right: 10px;
+    }
+
+    .comment p {
+        margin-bottom: 10px;
+    }
+
+
+
 </style>
 <div class="post">
             <div class="uploader-details">
@@ -185,15 +208,53 @@
                 </div>
             </div>
         </div>
-
+        @if($errors->any())
+        <div class="alert alert-danger">
+            <ul>
+                @foreach($errors->all() as $error)
+                    <li>{{$error}}</li>
+                @endforeach
+            </ul>
+        </div>
+        @endif
         @if(auth()->check())
     <div class="add-comment">
-    <form action="{{route('posts.store')}}" method="post" enctype='multipart/form-data'>
+    <form action="{{route('comments.store')}}" method="post" enctype='multipart/form-data'>
         @csrf
         <input type="text" placeholder="Write any comment?" name="comment">
+        <input type="hidden" name="post_id" value="{{$post->id}}">
         <button type="submit">Comment</button>
     </form>
     </div>
+
+    <!-- //show comments -->
+    @foreach($post->comments as $comment)
+        <div class="comment">
+            <div class="uploader-details">
+            @if($comment->user->image)
+                <img src="{{asset($comment->user->image)}}" alt="">
+            @else
+                <img src="https://th.bing.com/th/id/OIP.uQ4DG8iPTlnHC-dBRiRHjwHaHa?rs=1&pid=ImgDetMain" alt="">
+            @endif
+            <p>{{$comment->user->username}}</p>
+            </div>
+            <div class="edit-post">
+
+            @if(auth()->check() && auth()->user()->id == $comment->user_id)
+                <form action="{{route('comments.destroy' , $comment->id)}}" method="post">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit"><i class="ri-delete-bin-6-line"></i></button>
+                </form>
+            @endif
+            </div>
+            <div class="post-details">
+            <p class="time">{{$comment->created_at->diffForHumans()}}</p>
+            <p>{{$comment->comment}}</p>
+            </div>
+        </div>
+    @endforeach
+
     @endif
 
 @endsection
