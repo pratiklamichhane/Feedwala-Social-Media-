@@ -147,6 +147,10 @@
     .actions-button button i:hover {
         color: #0056b3;
     }
+
+    .liked {
+        background-color: red;
+    }
 </style>
 
 
@@ -203,10 +207,16 @@
 
             <div class="post-footer">
                 <div class="actions-button">
-                    <button><i class="ri-heart-line"></i></button>
+                    <button class="like-button"><i class="ri-heart-line"></i></button>
                     <a href="{{route('posts.show', $post->id)}}"><button><i class="ri-chat-3-line"></i></button></a>
                 </div>
             </div>
         </div>
-
+        <script>
+       document.querySelectorAll('.like-button').forEach(function(button) {
+        button.addEventListener('click', function() {
+        this.classList.toggle('liked');
+        });
+    });
+        </script>
     @endforeach
